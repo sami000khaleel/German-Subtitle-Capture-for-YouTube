@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "German Subtitle Capture",
+  "version": "1.0",
+  "description": "Capture German subtitles from YouTube for learning",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "German Subtitle Capture"
+  }
+}

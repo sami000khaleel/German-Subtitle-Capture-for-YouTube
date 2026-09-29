@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📝 German Subtitle Capture</h1>
+      <div class="controls">
+        <button id="exportBtn" class="btn">📥 Export</button>
+        <button id="clearBtn" class="btn btn-danger">🗑️ Clear All</button>
+      </div>
+      <div class="stats">
+        <span id="sentenceCount">0 sentences captured</span>
+      </div>
+      <div class="shortcuts-info">
+        <strong>Keyboard Shortcuts:</strong><br>
+        <span class="key">S</span> Jump to subtitle start &nbsp;
+        <span class="key">A</span> Previous subtitle &nbsp;
+        <span class="key">D</span> Next subtitle &nbsp;
+        <span class="key">E</span> Save subtitle
+      </div>
+    </div>
+
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Search sentences..." class="search-input">
+    </div>
+
+    <div id="sentenceList" class="sentence-list">
+      <div class="empty-state">
+        <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
+        <div style="font-size: 16px; margin-bottom: 8px;">No sentences captured yet!</div>
+        <div style="font-size: 13px; color: #999;">
+          Press <strong>E</strong> on YouTube to save subtitles
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

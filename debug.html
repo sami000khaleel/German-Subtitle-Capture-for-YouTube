@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Subtitle Debug</title>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    .debug-info {
+      background: #333;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    .success { color: #4CAF50; }
+    .error { color: #f44336; }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Subtitle Detection Debug</h1>
+  <p>Open this on a YouTube video page with captions enabled, then check the console (F12)</p>
+  
+  <button onclick="checkSubtitles()">Check Subtitles</button>
+  <button onclick="listAllSubtitles()">List All Cues</button>
+  <button onclick="checkDOM()">Check DOM Elements</button>
+  
+  <div id="output"></div>
+
+  <script>
+    function checkSubtitles() {
+      const video = document.querySelector('video');
+      const output = document.getElementById('output');
+      
+      if (!video) {
+        output.innerHTML = '<div class="debug-info error">No video element found</div>';
+        return;
+      }
+      
+      let html = '<div class="debug-info">';
+      html += `<h3>Video found: ${video.src || 'yes'}</h3>`;
+      html += `<p>Text tracks: ${video.textTracks.length}</p>`;
+      
+      for (let i = 0; i < video.textTracks.length; i++) {
+        const track = video.textTracks[i];
+        html += `<p>Track ${i}: mode="${track.mode}", kind="${track.kind}", language="${track.language}", cues=${track.cues?.length || 0}</p>`;
+        
+        if (track.mode === 'showing' && track.activeCues) {
+          html += `<p>Active cues: ${track.activeCues.length}</p>`;
+          for (let j = 0; j < track.activeCues.length; j++) {
+            const cue = track.activeCues[j];
+            html += `<p class="success">Cue ${j}: "${cue.text}" (${cue.startTime}s - ${cue.endTime}s)</p>`;
+          }
+        }
+      }
+      
+      html += '</div>';
+      output.innerHTML = html;
+    }
+    
+    function listAllSubtitles() {
+      const video = document.querySelector('video');
+      const output = document.getElementById('output');
+      
+      if (!video || !video.textTracks) {
+        output.innerHTML = '<div class="debug-info error">No video or text tracks found</div>';
+        return;
+      }
+      
+      let html = '<div class="debug-info"><h3>All Cues:</h3>';
+      let foundCues = false;
+      
+      for (let i = 0; i < video.textTracks.length; i++) {
+        const track = video.textTracks[i];
+        if (track.cues && track.cues.length > 0) {
+          foundCues = true;
+          html += `<h4>Track ${i} (${track.language}):</h4>`;
+          for (let j = 0; j < Math.min(track.cues.length, 20); j++) {
+            const cue = track.cues[j];
+            html += `<p>${j}: "${cue.text}" (${cue.startTime.toFixed(2)}s - ${cue.endTime.toFixed(2)}s)</p>`;
+          }
+          if (track.cues.length > 20) {
+            html += `<p>... and ${track.cues.length - 20} more cues</p>`;
+          }
+        }
+      }
+      
+      if (!foundCues) {
+        html += '<p class="error">No cues found in any track</p>';
+      }
+      
+      html += '</div>';
+      output.innerHTML = html;
+    }
+    
+    function checkDOM() {
+      const output = document.getElementById('output');
+      const selectors = [
+        '.ytp-caption-segment',
+        '.caption-visual-line',
+        '.ytp-caption-window-rollup .ytp-caption-segment',
+        '[class*="caption"] span',
+        '.captions-text span'
+      ];
+      
+      let html = '<div class="debug-info"><h3>DOM Subtitle Elements:</h3>';
+      let foundAny = false;
+      
+      for (const selector of selectors) {
+        const elements = document.querySelectorAll(selector);
+        if (elements.length > 0) {
+          foundAny = true;
+          html += `<h4>${selector} (${elements.length} found):</h4>`;
+          elements.forEach((el, i) => {
+            const style = window.getComputedStyle(el);
+            const visible = style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+            html += `<p class="${visible ? 'success' : 'error'}">${i}: "${el.textContent.trim()}" - visible: ${visible}</p>`;
+          });
+        }
+      }
+      
+      if (!foundAny) {
+        html += '<p class="error">No subtitle DOM elements found</p>';
+      }
+      
+      html += '</div>';
+      output.innerHTML = html;
+    }
+  </script>
+</body>
+</html>
